@@ -6,7 +6,7 @@ on:
 
 jobs:
   validate:
-    name: Validate compose + Prometheus config
+    name: Validate compose + Prometheus config + smoke test
     runs-on: ubuntu-latest
 
     steps:
@@ -24,3 +24,41 @@ jobs:
             -v "${{ github.workspace }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
             prom/prometheus:latest \
             check config /etc/prometheus/prometheus.yml
+
+      - name: "Smoke test: start stack"
+        run: |
+          docker compose up -d
+          docker compose ps
+
+      - name: "Smoke test: Prometheus ready endpoint"
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:9090/-/ready >/dev/null; then
+              echo "Prometheus is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Prometheus did not become ready"
+          docker compose logs prometheus
+          exit 1
+
+      - name: "Smoke test: Grafana health endpoint"
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3000/api/health >/dev/null; then
+              echo "Grafana is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Grafana did not become healthy"
+          docker compose logs grafana
+          exit 1
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose down -v
