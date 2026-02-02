@@ -109,7 +109,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 - (avg by (instance) (rate(windows_cpu_time_total{mode=\"idle\"}[2m])) * 100)",
+          "expr": "100 - (avg by (instance) (rate(windows_cpu_time_total{job=\"windows_exporter\",mode=\"idle\"}[2m])) * 100)",
           "legendFormat": "CPU Usage",
           "range": true,
           "refId": "A"
@@ -206,7 +206,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 - ((windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes) * 100)",
+          "expr": "100 - ((windows_os_physical_memory_free_bytes{job=\"windows_exporter\"} / windows_cs_physical_memory_bytes{job=\"windows_exporter\"}) * 100)",
           "legendFormat": "Memory Usage",
           "range": true,
           "refId": "A"
@@ -301,7 +301,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "windows_logical_disk_free_bytes{volume!~\"HarddiskVolume.*\"}",
+          "expr": "windows_logical_disk_free_bytes{job=\"windows_exporter\",volume!~\"HarddiskVolume.*\"}",
           "legendFormat": "{{volume}} Free",
           "range": true,
           "refId": "A"
@@ -396,7 +396,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(windows_net_bytes_received_total[2m])",
+          "expr": "rate(windows_net_bytes_received_total{job=\"windows_exporter\"}[2m])",
           "legendFormat": "{{nic}} Received",
           "range": true,
           "refId": "A"
@@ -407,7 +407,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(windows_net_bytes_sent_total[2m])",
+          "expr": "rate(windows_net_bytes_sent_total{job=\"windows_exporter\"}[2m])",
           "hide": false,
           "legendFormat": "{{nic}} Sent",
           "range": true,
@@ -472,7 +472,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "windows_system_system_up_time",
+          "expr": "windows_system_system_up_time{job=\"windows_exporter\"}",
           "legendFormat": "System Uptime",
           "range": true,
           "refId": "A"
@@ -488,9 +488,10 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
+  "refresh": "30s",
   "timepicker": {},
   "timezone": "browser",
   "title": "Windows Monitoring",
