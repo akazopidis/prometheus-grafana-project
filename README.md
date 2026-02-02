@@ -45,7 +45,47 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ## Project structure (typical)
 - `compose.yaml` – runs Prometheus + Grafana
 - `prometheus/prometheus.yml` – Prometheus scrape configuration
+- `grafana/` – Grafana configuration and dashboards
+  - `provisioning/dashboards/` – Dashboard provisioning configuration
+  - `provisioning/datasources/` – Datasource provisioning configuration
+  - `dashboards/` – Dashboard JSON files (auto-loaded on startup)
 - `.github/workflows/ci.yml` – GitHub Actions CI workflow
+
+---
+
+## Grafana Dashboard Auto-Provisioning
+
+This project uses Grafana's provisioning feature to automatically load dashboards and datasources on startup.
+
+### Folder Structure
+```
+grafana/
+├── provisioning/
+│   ├── dashboards/
+│   │   └── dashboard.yml      # Dashboard provisioning config
+│   └── datasources/
+│       └── datasource.yml     # Datasource provisioning config
+└── dashboards/
+    └── windows-monitoring.json # Sample Windows dashboard
+```
+
+### Pre-configured Dashboards
+- **Windows Monitoring**: Displays CPU, memory, disk, network, and uptime metrics
+  - Automatically loaded on Grafana startup
+  - Uses windows_exporter metrics
+
+### Adding New Dashboards
+1. Create your dashboard in Grafana UI
+2. Export the dashboard as JSON:
+   - Dashboard Settings → JSON Model → Copy to Clipboard
+3. Save the JSON file to `grafana/dashboards/`
+4. Restart Grafana: `docker compose restart grafana`
+5. The dashboard will be automatically loaded
+
+### Pre-configured Datasources
+- **Prometheus** datasource is automatically configured and set as default
+- Points to `http://prometheus:9090`
+- No manual configuration needed on first startup
 
 ---
 
@@ -83,17 +123,18 @@ Grafana default login (unless you changed it):
 
 ## Configure Grafana (first time)
 1. Log into Grafana
-2. Add a Prometheus data source:
-   - **URL:** `http://prometheus:9090`
-3. Create or import dashboards
+2. **Prometheus datasource is already configured** (auto-provisioned)
+3. **Windows Monitoring dashboard is already available** (auto-provisioned)
+   - Navigate to Dashboards to view it
 
-Recommended panels to start with:
-- CPU usage %
-- Memory used %
-- Disk free space (per drive)
-- Disk read/write MB/s
-- Network in/out MB/s
-- Uptime
+The following are automatically set up via provisioning:
+- Prometheus datasource pointing to `http://prometheus:9090`
+- Windows Monitoring dashboard with panels for:
+  - CPU usage %
+  - Memory used %
+  - Disk free space (per drive)
+  - Network in/out bytes/sec
+  - System uptime
 
 ---
 
