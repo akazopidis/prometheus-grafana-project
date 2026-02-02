@@ -11,7 +11,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ---
 
 ## What you get
-- CPU / Memory / Disk / Network / Uptime metrics from your Windows machine
+- CPU / Memory / Disk / Network metrics from your Windows machine
 - Prometheus UI for querying metrics
 - Grafana UI for building dashboards
 - GitHub Actions CI that validates:
@@ -134,7 +134,7 @@ The following are automatically set up via provisioning:
   - Memory used %
   - Disk free space (per drive)
   - Network in/out bytes/sec
-  - System uptime
+  - Available memory (GB)
 
 ---
 

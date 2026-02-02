@@ -171,8 +171,16 @@
                 "value": null
               },
               {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 90
               }
             ]
           },
@@ -206,7 +214,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 - ((windows_os_physical_memory_free_bytes{job=\"windows_exporter\"} / windows_cs_physical_memory_bytes{job=\"windows_exporter\"}) * 100)",
+          "expr": "100 - ((windows_memory_available_bytes{job=\"windows_exporter\"} / windows_memory_physical_total_bytes{job=\"windows_exporter\"}) * 100)",
           "legendFormat": "Memory Usage",
           "range": true,
           "refId": "A"
@@ -437,7 +445,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "decgbytes"
         },
         "overrides": []
       },
@@ -472,13 +480,13 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "windows_system_system_up_time{job=\"windows_exporter\"}",
-          "legendFormat": "System Uptime",
+          "expr": "windows_memory_available_bytes{job=\"windows_exporter\"} / 1024 / 1024 / 1024",
+          "legendFormat": "Available Memory",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "System Uptime",
+      "title": "Available Memory (GB)",
       "type": "stat"
     }
   ],
