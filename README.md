@@ -296,11 +296,12 @@ receivers:
 ```yaml
 receivers:
   - name: 'default'
-    discord_configs:
-      - webhook_url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
-        title: 'Alert: {{ .GroupLabels.alertname }}'
-        message: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+    webhook_configs:
+      - url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
+        send_resolved: true
 ```
+
+**Note**: Discord requires a specific JSON payload format. You may need to use a webhook proxy or custom formatter.
 
 #### Microsoft Teams Webhook
 

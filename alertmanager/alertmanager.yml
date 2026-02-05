@@ -30,11 +30,10 @@ receivers:
     #     headers:
     #       Subject: 'Alert: {{ .GroupLabels.alertname }}'
 
-    # Example: Discord webhook
-    # discord_configs:
-    #   - webhook_url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
-    #     title: 'Alert: {{ .GroupLabels.alertname }}'
-    #     message: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+    # Example: Discord webhook (using generic webhook_configs)
+    # webhook_configs:
+    #   - url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
+    #     send_resolved: true
 
     # Example: Microsoft Teams webhook
     # webhook_configs:
