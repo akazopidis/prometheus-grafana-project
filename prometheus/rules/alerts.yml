@@ -67,14 +67,3 @@ groups:
         annotations:
           summary: "Windows Exporter is down on {{ $labels.instance }}"
           description: "The windows_exporter service is not responding. Cannot collect metrics."
-
-      # Alert when Prometheus cannot scrape the target
-      - alert: TargetDown
-        expr: up{job="windows_exporter"} == 0
-        for: 1m
-        labels:
-          severity: warning
-          component: monitoring
-        annotations:
-          summary: "Scrape target {{ $labels.job }} is down"
-          description: "{{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute."

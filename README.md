@@ -197,7 +197,7 @@ This stack includes **Alertmanager** for managing and routing alerts generated b
 
 The alerting system follows this flow:
 
-1. **Prometheus** evaluates alert rules every 15 seconds
+1. **Prometheus** evaluates alert rules every 30 seconds (configurable via `interval` in alert rules)
 2. When a rule condition is met, Prometheus sends alerts to **Alertmanager**
 3. **Alertmanager** groups, deduplicates, and routes alerts to configured notification channels
 
@@ -222,7 +222,6 @@ The following alert rules are configured in `prometheus/rules/alerts.yml`:
 | **LowDiskSpace** | Disk free space < 10% | 5 minutes | warning | Warns when any disk is running low on space |
 | **CriticalDiskSpace** | Disk free space < 5% | 2 minutes | critical | Critical alert for very low disk space |
 | **WindowsExporterDown** | windows_exporter unreachable | 2 minutes | critical | Alerts when the exporter service is down |
-| **TargetDown** | Scrape target down | 1 minute | warning | Warns when Prometheus cannot scrape a target |
 
 ### Alert States
 
