@@ -1,0 +1,48 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'instance']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+
+receivers:
+  - name: 'default'
+    # Logs alerts to console (for testing/educational purposes)
+    # Add your notification channels here (email, Slack, webhook, etc.)
+
+    # Example: Slack webhook
+    # slack_configs:
+    #   - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    #     channel: '#alerts'
+    #     title: 'Alert: {{ .GroupLabels.alertname }}'
+    #     text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+
+    # Example: Email notifications
+    # email_configs:
+    #   - to: 'your-email@example.com'
+    #     from: 'alertmanager@example.com'
+    #     smarthost: 'smtp.example.com:587'
+    #     auth_username: 'your-username'
+    #     auth_password: 'your-password'
+    #     headers:
+    #       Subject: 'Alert: {{ .GroupLabels.alertname }}'
+
+    # Example: Discord webhook (using generic webhook_configs)
+    # webhook_configs:
+    #   - url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
+    #     send_resolved: true
+
+    # Example: Microsoft Teams webhook
+    # webhook_configs:
+    #   - url: 'https://outlook.office.com/webhook/YOUR/TEAMS/WEBHOOK'
+    #     send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']

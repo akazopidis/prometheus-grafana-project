@@ -1,0 +1,69 @@
+groups:
+  - name: windows_alerts
+    interval: 30s
+    rules:
+      # Alert when CPU usage is above 80% for 5 minutes
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(windows_cpu_time_total{job="windows_exporter",mode="idle"}[2m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: cpu
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage is above 80% (current value: {{ $value | humanize }}%)"
+
+      # Alert when CPU usage is above 95% for 2 minutes (critical)
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by (instance) (rate(windows_cpu_time_total{job="windows_exporter",mode="idle"}[2m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: cpu
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is critically high at {{ $value | humanize }}%"
+
+      # Alert when memory usage is above 90%
+      - alert: HighMemoryUsage
+        expr: 100 - ((windows_memory_available_bytes{job="windows_exporter"} / windows_memory_physical_total_bytes{job="windows_exporter"}) * 100) > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: memory
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 90% (current: {{ $value | humanize }}%)"
+
+      # Alert when any disk has less than 10% free space
+      - alert: LowDiskSpace
+        expr: (windows_logical_disk_free_bytes{job="windows_exporter",volume!~"HarddiskVolume.*"} / windows_logical_disk_size_bytes{job="windows_exporter",volume!~"HarddiskVolume.*"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+          component: disk
+        annotations:
+          summary: "Low disk space on {{ $labels.volume }} of {{ $labels.instance }}"
+          description: "Disk {{ $labels.volume }} has less than 10% free space (current: {{ $value | humanize }}%)"
+
+      # Alert when any disk has less than 5% free space (critical)
+      - alert: CriticalDiskSpace
+        expr: (windows_logical_disk_free_bytes{job="windows_exporter",volume!~"HarddiskVolume.*"} / windows_logical_disk_size_bytes{job="windows_exporter",volume!~"HarddiskVolume.*"}) * 100 < 5
+        for: 2m
+        labels:
+          severity: critical
+          component: disk
+        annotations:
+          summary: "CRITICAL: Disk space almost full on {{ $labels.volume }}"
+          description: "Disk {{ $labels.volume }} has less than 5% free space! (current: {{ $value | humanize }}%)"
+
+      # Alert when windows_exporter is down
+      - alert: WindowsExporterDown
+        expr: up{job="windows_exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: exporter
+        annotations:
+          summary: "Windows Exporter is down on {{ $labels.instance }}"
+          description: "The windows_exporter service is not responding. Cannot collect metrics."
