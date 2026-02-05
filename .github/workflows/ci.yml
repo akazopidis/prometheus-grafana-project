@@ -25,6 +25,14 @@ jobs:
             prom/prometheus:latest \
             check config /etc/prometheus/prometheus.yml
 
+      - name: Validate Prometheus alert rules
+        run: |
+          docker run --rm \
+            --entrypoint promtool \
+            -v "${{ github.workspace }}/prometheus/rules:/etc/prometheus/rules:ro" \
+            prom/prometheus:latest \
+            check rules /etc/prometheus/rules/alerts.yml
+
       - name: "Smoke test: start stack"
         run: |
           docker compose up -d
@@ -56,6 +64,20 @@ jobs:
 
           echo "Grafana did not become healthy"
           docker compose logs grafana
+          exit 1
+
+      - name: "Smoke test: Alertmanager ready endpoint"
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:9093/-/ready >/dev/null; then
+              echo "Alertmanager is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Alertmanager did not become ready"
+          docker compose logs alertmanager
           exit 1
 
       - name: Tear down
