@@ -11,6 +11,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ---
 
 ## What you get
+
 - CPU / Memory / Disk / Network metrics from your Windows machine
 - Prometheus UI for querying metrics
 - Grafana UI for building dashboards
@@ -25,6 +26,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ---
 
 ## Prerequisites
+
 - Windows 10/11
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (with Docker Compose)
 - **windows_exporter** installed and running on the Windows host
@@ -34,6 +36,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ## Install windows_exporter (Windows host)
 
 ### Option A: MSI installer (common)
+
 1. Download **windows_exporter** from the official releases:
    https://github.com/prometheus-community/windows_exporter/releases
 2. Install it (defaults to port **9182**).
@@ -46,6 +49,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 ---
 
 ## Project structure (typical)
+
 - `compose.yaml` – runs Prometheus + Grafana
 - `prometheus/prometheus.yml` – Prometheus scrape configuration
 - `grafana/` – Grafana configuration and dashboards
@@ -61,6 +65,7 @@ This repo is meant to be simple, reproducible, and beginner-friendly.
 This project uses Grafana's provisioning feature to automatically load dashboards and datasources on startup.
 
 ### Folder Structure
+
 ```
 grafana/
 ├── provisioning/
@@ -73,11 +78,13 @@ grafana/
 ```
 
 ### Pre-configured Dashboards
+
 - **Windows Monitoring**: Displays CPU, memory, disk, network, and uptime metrics
   - Automatically loaded on Grafana startup
   - Uses windows_exporter metrics
 
 ### Adding New Dashboards
+
 1. Create your dashboard in Grafana UI
 2. Export the dashboard as JSON:
    - Dashboard Settings → JSON Model → Copy to Clipboard
@@ -86,6 +93,7 @@ grafana/
 5. The dashboard will be automatically loaded
 
 ### Pre-configured Datasources
+
 - **Prometheus** datasource is automatically configured and set as default
 - Points to `http://prometheus:9090`
 - No manual configuration needed on first startup
@@ -115,23 +123,27 @@ docker compose down
 ---
 
 ## Access the UIs
+
 - Prometheus: http://localhost:9090
 - Grafana: http://localhost:3000
 - Alertmanager: http://localhost:9093
 
 Grafana default login (unless you changed it):
+
 - **user:** `admin`
 - **password:** `admin`
 
 ---
 
 ## Configure Grafana (first time)
+
 1. Log into Grafana
 2. **Prometheus datasource is already configured** (auto-provisioned)
 3. **Windows Monitoring dashboard is already available** (auto-provisioned)
    - Navigate to Dashboards to view it
 
 The following are automatically set up via provisioning:
+
 - Prometheus datasource pointing to `http://prometheus:9090`
 - Windows Monitoring dashboard with panels for:
   - CPU usage %
@@ -143,6 +155,7 @@ The following are automatically set up via provisioning:
 ---
 
 ## Notes about scraping Windows from Docker
+
 Prometheus runs inside Docker, but windows_exporter runs on your Windows host.
 
 Most setups use:
@@ -154,11 +167,13 @@ If your `prometheus.yml` uses a different hostname or IP, adjust accordingly.
 ---
 
 ## CI (GitHub Actions)
+
 This repo includes a workflow under:
 
 - `.github/workflows/ci.yml`
 
 It runs on every push / pull request and checks:
+
 - `docker compose config` (validates Compose syntax)
 - `promtool check config` (validates Prometheus config)
 - Optional: starts the stack and checks:
@@ -170,6 +185,7 @@ It runs on every push / pull request and checks:
 ## Troubleshooting
 
 ### Grafana/Prometheus won’t start
+
 Check logs:
 
 ```bash
@@ -178,6 +194,7 @@ docker compose logs prometheus
 ```
 
 ### Prometheus target is DOWN
+
 1. Open Prometheus → Status → Targets:
    - http://localhost:9090/targets
 2. If the windows_exporter target is down:
@@ -185,6 +202,7 @@ docker compose logs prometheus
    - Confirm `prometheus.yml` points to the correct host/port
 
 ### Common Windows firewall issue
+
 If Prometheus cannot reach the exporter, allow inbound connections to port **9182** on Windows Firewall.
 
 ---
@@ -204,6 +222,7 @@ The alerting system follows this flow:
 ### Accessing Alertmanager UI
 
 Alertmanager provides a web UI to view and manage active alerts:
+
 - **URL**: http://localhost:9093
 - **Features**:
   - View all active alerts
@@ -214,14 +233,14 @@ Alertmanager provides a web UI to view and manage active alerts:
 
 The following alert rules are configured in `prometheus/rules/alerts.yml`:
 
-| Alert Name | Condition | Duration | Severity | Description |
-|------------|-----------|----------|----------|-------------|
-| **HighCPUUsage** | CPU usage > 80% | 5 minutes | warning | Warns when CPU usage is consistently high |
-| **CriticalCPUUsage** | CPU usage > 95% | 2 minutes | critical | Critical alert for extremely high CPU usage |
-| **HighMemoryUsage** | Memory usage > 90% | 5 minutes | warning | Warns when memory usage is high |
-| **LowDiskSpace** | Disk free space < 10% | 5 minutes | warning | Warns when any disk is running low on space |
-| **CriticalDiskSpace** | Disk free space < 5% | 2 minutes | critical | Critical alert for very low disk space |
-| **WindowsExporterDown** | windows_exporter unreachable | 2 minutes | critical | Alerts when the exporter service is down |
+| Alert Name              | Condition                    | Duration  | Severity | Description                                 |
+| ----------------------- | ---------------------------- | --------- | -------- | ------------------------------------------- |
+| **HighCPUUsage**        | CPU usage > 80%              | 5 minutes | warning  | Warns when CPU usage is consistently high   |
+| **CriticalCPUUsage**    | CPU usage > 95%              | 2 minutes | critical | Critical alert for extremely high CPU usage |
+| **HighMemoryUsage**     | Memory usage > 90%           | 5 minutes | warning  | Warns when memory usage is high             |
+| **LowDiskSpace**        | Disk free space < 10%        | 5 minutes | warning  | Warns when any disk is running low on space |
+| **CriticalDiskSpace**   | Disk free space < 5%         | 2 minutes | critical | Critical alert for very low disk space      |
+| **WindowsExporterDown** | windows_exporter unreachable | 2 minutes | critical | Alerts when the exporter service is down    |
 
 ### Alert States
 
@@ -232,6 +251,7 @@ Alerts can be in one of three states:
 - **Firing**: The alert condition has been met for longer than the `for` duration
 
 You can view alert states in:
+
 - **Prometheus UI**: http://localhost:9090/alerts
 - **Alertmanager UI**: http://localhost:9093
 
@@ -240,19 +260,14 @@ You can view alert states in:
 To test if alerting is working correctly:
 
 #### Test CPU Alert
+
 1. Run a CPU stress test on Windows:
-   ```powershell
-   # PowerShell - stress CPU for 5 minutes
-   $end = (Get-Date).AddMinutes(5)
-   while ((Get-Date) -lt $end) {
-       $result = 1..100000 | ForEach-Object { $_ * $_ }
-   }
-   ```
 2. Wait ~5 minutes for the `HighCPUUsage` alert to fire
 3. Check Prometheus UI: http://localhost:9090/alerts
 4. Check Alertmanager UI: http://localhost:9093
 
 #### Test Exporter Down Alert
+
 1. Stop the windows_exporter service on Windows
 2. Wait ~2 minutes for the `WindowsExporterDown` alert to fire
 3. Check alert in Prometheus and Alertmanager UIs
@@ -266,11 +281,11 @@ Alertmanager supports multiple notification channels. Edit `alertmanager/alertma
 
 ```yaml
 receivers:
-  - name: 'default'
+  - name: "default"
     slack_configs:
-      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
-        channel: '#alerts'
-        title: 'Alert: {{ .GroupLabels.alertname }}'
+      - api_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+        channel: "#alerts"
+        title: "Alert: {{ .GroupLabels.alertname }}"
         text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
 ```
 
@@ -278,15 +293,15 @@ receivers:
 
 ```yaml
 receivers:
-  - name: 'default'
+  - name: "default"
     email_configs:
-      - to: 'your-email@example.com'
-        from: 'alertmanager@example.com'
-        smarthost: 'smtp.gmail.com:587'
-        auth_username: 'your-email@gmail.com'
-        auth_password: 'your-app-password'
+      - to: "your-email@example.com"
+        from: "alertmanager@example.com"
+        smarthost: "smtp.gmail.com:587"
+        auth_username: "your-email@gmail.com"
+        auth_password: "your-app-password"
         headers:
-          Subject: 'Alert: {{ .GroupLabels.alertname }}'
+          Subject: "Alert: {{ .GroupLabels.alertname }}"
 ```
 
 **Note**: For Gmail, you need to use an [App Password](https://support.google.com/accounts/answer/185833).
@@ -295,9 +310,9 @@ receivers:
 
 ```yaml
 receivers:
-  - name: 'default'
+  - name: "default"
     webhook_configs:
-      - url: 'https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK'
+      - url: "https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK"
         send_resolved: true
 ```
 
@@ -307,9 +322,9 @@ receivers:
 
 ```yaml
 receivers:
-  - name: 'default'
+  - name: "default"
     webhook_configs:
-      - url: 'https://outlook.office.com/webhook/YOUR/TEAMS/WEBHOOK'
+      - url: "https://outlook.office.com/webhook/YOUR/TEAMS/WEBHOOK"
         send_resolved: true
 ```
 
@@ -331,7 +346,7 @@ To add your own alert rules:
   expr: your_promql_expression > threshold
   for: 5m
   labels:
-    severity: warning  # or critical
+    severity: warning # or critical
     component: your_component
   annotations:
     summary: "Brief description of the alert"
@@ -339,6 +354,7 @@ To add your own alert rules:
 ```
 
 3. Validate the rules:
+
 ```bash
 docker run --rm \
   --entrypoint promtool \
@@ -348,6 +364,7 @@ docker run --rm \
 ```
 
 4. Reload Prometheus configuration:
+
 ```bash
 docker compose restart prometheus
 ```
@@ -363,23 +380,27 @@ docker compose restart prometheus
 ### Troubleshooting Alerts
 
 #### Alerts not appearing in Alertmanager
+
 1. Check Prometheus UI → Status → Configuration to verify Alertmanager target
 2. Check Prometheus logs: `docker compose logs prometheus`
 3. Verify alert rules are loading: http://localhost:9090/rules
 4. Check for rule syntax errors in CI or with promtool
 
 #### Alerts not firing when they should
+
 1. Verify the alert expression in Prometheus UI → Graph
 2. Check if the `for` duration has elapsed
 3. Review alert state in Prometheus UI → Alerts
 
 #### Notifications not being sent
+
 1. Check Alertmanager configuration syntax
 2. Review Alertmanager logs: `docker compose logs alertmanager`
 3. Test webhook URLs manually with curl
 4. Verify credentials for email/Slack/etc.
 
 #### Alert flapping (firing and resolving repeatedly)
+
 - Increase the `for` duration in the alert rule
 - Adjust the threshold to be less sensitive
 - Check if the underlying metric is unstable
