@@ -261,7 +261,7 @@ To test if alerting is working correctly:
 
 #### Test CPU Alert
 
-1. Run a CPU stress test on Windows:
+1. Run a CPU stress test on Windows.
 2. Wait ~5 minutes for the `HighCPUUsage` alert to fire
 3. Check Prometheus UI: http://localhost:9090/alerts
 4. Check Alertmanager UI: http://localhost:9093
